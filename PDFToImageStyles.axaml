@@ -10,11 +10,16 @@
     <!--  selectors works almost like in css  -->
     <!--  https://docs.avaloniaui.net/docs/reference/styles/style-selector-syntax  -->
     <!--  also we can filter by pseudoclasses e.g. :Button.red:pointerover - https://docs.avaloniaui.net/docs/reference/styles/pseudo-classes  -->
-    <Style Selector="StackPanel.offset10">
+    <Style Selector=":is(Control).offset10">
         <Setter Property="Margin" Value="{DynamicResource Margin10}" />
     </Style>
-    <Style Selector="StackPanel.offset10_rl">
+    <Style Selector=":is(Control).offset10_rl">
         <Setter Property="Margin" Value="{DynamicResource Margin10RL}" />
+    </Style>
+
+    <!--  Applies separation to all child elements with given class  -->
+    <Style Selector=".separation5 > :is(Control)">
+        <Setter Property="Margin" Value="5" />
     </Style>
 
     <Style Selector=":is(TextBlock)">

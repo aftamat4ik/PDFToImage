@@ -3,11 +3,15 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="https://github.com/projektanker/icons.avalonia"
+    xmlns:interfaces="using:PDFToImage.Interfaces"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:PDFToImage.Models"
+    xmlns:uv="clr-namespace:UVtools.AvaloniaControls;assembly=UVtools.AvaloniaControls"
     xmlns:vm="using:PDFToImage.ViewModels"
     Title="PDFToImage"
-    d:DesignHeight="450"
-    d:DesignWidth="800"
+    Width="800"
+    Height="450"
     x:DataType="vm:MainWindowViewModel"
     Icon="/Assets/avalonia-logo.ico"
     mc:Ignorable="d">
@@ -19,30 +23,193 @@
         -->
         <vm:MainWindowViewModel />
     </Design.DataContext>
-    <Grid Margin="10" RowDefinitions="*">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="300" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200" />
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="2*" />
         </Grid.ColumnDefinitions>
-        <ListBox x:Name="animals">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding}" />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <Border
+            Grid.Row="0"
+            Grid.Column="0"
+            BorderBrush="Teal"
+            BorderThickness="1">
+            <ListBox
+                x:Name="fileItemsList"
+                ItemsSource="{Binding Files}"
+                SelectedItems="{Binding SelectedFiles, Mode=TwoWay}"
+                SelectionMode="Multiple">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="models:FileItem">
+                        <TextBlock Text="{Binding FileName}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
         <StackPanel
             Grid.Row="0"
             Grid.Column="1"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-            Classes="offset10_rl">
-            <TextBlock
-                HorizontalAlignment="Center"
-                VerticalAlignment="Stretch"
-                Classes="header"
-                Text="{Binding Greeting}" />
-            <Button x:Name="selectFilesBtn">Select Files</Button>
+            Classes="offset10_rl"
+            Orientation="Vertical">
+            <uv:GroupBox
+                Padding="10,0,10,0"
+                Background="Teal"
+                BorderBrush="BlueViolet"
+                BorderThickness="0"
+                CornerRadius="5"
+                Header="Conversion Settings">
+                <WrapPanel>
+                    <StackPanel
+                        Margin="0,0,10,20"
+                        VerticalAlignment="Top"
+                        Orientation="Vertical">
+                        <Label
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            FontSize="{DynamicResource FontSizeSmall}"
+                            Target="numThreads">
+                            Threads Number:
+                        </Label>
+                        <NumericUpDown
+                            Name="numThreads"
+                            VerticalAlignment="Center"
+                            Increment="1"
+                            Maximum="5"
+                            Minimum="1"
+                            Watermark="Select number of threads"
+                            Value="3" />
+                    </StackPanel>
+                    <StackPanel
+                        Margin="0,0,10,20"
+                        VerticalAlignment="Top"
+                        Orientation="Vertical">
+                        <Label
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            FontSize="{DynamicResource FontSizeSmall}"
+                            Target="qualityNumeric">
+                            Quality:
+                        </Label>
+                        <NumericUpDown
+                            Name="qualityNumeric"
+                            VerticalAlignment="Center"
+                            Increment="10"
+                            Maximum="300"
+                            Minimum="10"
+                            Watermark="Select Image Quality"
+                            Value="{Binding Quality}" />
+                    </StackPanel>
+                    <StackPanel
+                        Margin="10,0,0,20"
+                        VerticalAlignment="Top"
+                        Orientation="Vertical">
+                        <Label
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            FontSize="{DynamicResource FontSizeSmall}"
+                            Target="conversionFormat">
+                            Format:
+                        </Label>
+                        <ComboBox
+                            Name="conversionFormat"
+                            VerticalAlignment="Center"
+                            ItemsSource="{Binding AvailableFormats}"
+                            PlaceholderText="Pick target Format"
+                            SelectedItem="{Binding SelectedFormat}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate DataType="interfaces:IOutputFormat">
+                                    <Panel>
+                                        <TextBlock Text="{Binding Name}" />
+                                    </Panel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                    <CheckBox
+                        VerticalAlignment="Center"
+                        Classes="offset10_rl"
+                        Content="Lossless Compression"
+                        IsChecked="{Binding IsLossless}"
+                        IsEnabled="{Binding IsWebpSelected}"
+                        IsVisible="{Binding IsWebpSelected}" />
+                </WrapPanel>
+            </uv:GroupBox>
+            <Button Command="{Binding ConvertFilesCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <i:Icon
+                        Margin="2,0,5,0"
+                        FontSize="15"
+                        Value="mdi-play" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Foreground="White"
+                        Text="Convert" />
+                </StackPanel>
+            </Button>
         </StackPanel>
+        <WrapPanel
+            Grid.Row="1"
+            Grid.Column="0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Classes="separation5"
+            Orientation="Horizontal">
+            <Button Name="addFilesBtn">
+                <StackPanel Orientation="Horizontal">
+                    <i:Icon
+                        Margin="2,0,5,0"
+                        FontSize="15"
+                        Value="mdi-folder" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Foreground="White"
+                        Text="Add Files" />
+                </StackPanel>
+            </Button>
+            <Button Name="clearFilesBtn" Command="{Binding ClearFilesCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <i:Icon
+                        Margin="2,0,5,0"
+                        FontSize="15"
+                        Value="mdi-backspace-outline" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Foreground="White"
+                        Text="Clear" />
+                </StackPanel>
+            </Button>
+            <Button
+                Name="removeItemsBtn"
+                Classes="Primary"
+                Command="{Binding RemoveSelectedCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <i:Icon
+                        Margin="2,0,5,0"
+                        FontSize="15"
+                        Value="mdi-delete-outline" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Foreground="White"
+                        Text="Remove Selected" />
+                </StackPanel>
+            </Button>
+        </WrapPanel>
+        <TextBox
+            x:Name="logTB"
+            Grid.Row="1"
+            Grid.Column="1"
+            Height="125"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Bottom"
+            AcceptsReturn="True"
+            IsReadOnly="True"
+            Text="{Binding Log}"
+            TextWrapping="Wrap" />
+
     </Grid>
 </Window>

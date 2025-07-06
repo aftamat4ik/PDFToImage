@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PDFToImage.Models
 {
-    public class FileItem : ObservableObject
+    public partial class FileItem : ObservableObject
     {
     [ObservableProperty]
     private string _filePath;
