@@ -31,7 +31,7 @@ namespace PDFToImage.ViewModels
         private bool _isLossless = false;
 
         [ObservableProperty]
-        private int _quality = 80;
+        private int _quality = Helpers.DEFAULT_QUALITY;
 
         [ObservableProperty]
         private string _log = "";
@@ -39,7 +39,6 @@ namespace PDFToImage.ViewModels
         private readonly Queue<string> _logBuilder = new();
         private readonly object _logLock = new(); // as log is written from async methods
         private readonly object _conversionLock = new();
-        private const int MAX_LOG_SIZE = 200;
         [ObservableProperty]
         private bool _isConverting = false;
         private bool shouldStopConversion = false;
@@ -58,7 +57,7 @@ namespace PDFToImage.ViewModels
             };
             SelectedFormat = AvailableFormats[0];
             IsWebpSelected = SelectedFormat is WebpFormat;
-            if (IsWebpSelected && Quality < 80)
+            if (IsWebpSelected && Quality < Helpers.DEFAULT_QUALITY)
             {
                 IsLossless = false;
             }
@@ -113,7 +112,7 @@ namespace PDFToImage.ViewModels
 
         partial void OnQualityChanged(int oldValue, int newValue)
         {
-            if (newValue < 80 && IsLossless)
+            if (newValue < Helpers.DEFAULT_QUALITY && IsLossless)
             {
                 IsLossless = false;
                 OnPropertyChanged(nameof(IsLossless));
@@ -145,7 +144,8 @@ namespace PDFToImage.ViewModels
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
             if (Directory.Exists(basePath))
             {
-                string outputDirectory = System.IO.Path.Combine(basePath, "Output");
+                // places all files into timestamp directory to separate results of different conversions
+                string outputDirectory = System.IO.Path.Combine(basePath, "Output", Helpers.GetTimeStamp());
                 // make sure output dir exists
                 if (!Directory.Exists(outputDirectory))
                 {
@@ -155,9 +155,10 @@ namespace PDFToImage.ViewModels
                 }
 
                 AppendLog($"> Output directory is : {outputDirectory}");
-                
+
                 return outputDirectory;
-            } else
+            }
+            else
                 throw new InvalidOperationException($"Somehow current base directory not found in your system!");
         }
 
@@ -261,7 +262,7 @@ namespace PDFToImage.ViewModels
             }*/
 
             AppendLog($"> Converted {convertedCount} files to {SelectedFormat.Name}{loselessStr}");
-            AppendLog($"> Files can be found in Output directory: {outputDir}");
+            AppendLog($"> Files can be found in Output directory:\n> {outputDir}");
             AppendLog($"> ---------- ^-^ ----------");
 
             UpdateConversionState(false);
@@ -301,7 +302,7 @@ namespace PDFToImage.ViewModels
             {
                 _logBuilder.Enqueue(message);
                 Log = string.Join("\n", _logBuilder);
-                if (_logBuilder.Count > MAX_LOG_SIZE)
+                if (_logBuilder.Count > Helpers.MAX_LOG_SIZE)
                     _logBuilder.Dequeue();
             }
         }
