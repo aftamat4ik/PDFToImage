@@ -12,7 +12,24 @@ namespace PDFToImage.Views
             InitializeComponent();
             addFilesBtn.Click += AddFilesBtn_Click;
             logTB.TextChanged += LogTB_TextChanged;
+            losslessCompressionMode.IsCheckedChanged += LosslessCompressionMode_IsCheckedChanged;
+        }
 
+        private void LosslessCompressionMode_IsCheckedChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (losslessCompressionMode.IsChecked == true)
+            {
+                if (qualityNumeric.Value < 80)
+                {
+                    losslessCompressionMode.IsChecked = false;
+                    if (DataContext is MainWindowViewModel viewModel){
+
+                        viewModel.AppendLog("> Webp can't be Lossless if Quality < 80");
+
+                        viewModel.AppendLog($"> Current Quality is : {viewModel.Quality}");
+                    }
+                }
+            }
         }
 
         /// <summary>

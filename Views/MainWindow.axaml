@@ -12,8 +12,11 @@
     Title="PDFToImage"
     Width="800"
     Height="450"
+    MinWidth="500"
+    MinHeight="350"
     x:DataType="vm:MainWindowViewModel"
     Icon="/Assets/avalonia-logo.ico"
+    SystemDecorations="Full"
     mc:Ignorable="d">
 
     <Design.DataContext>
@@ -25,7 +28,7 @@
     </Design.DataContext>
     <Grid Margin="10">
         <Grid.RowDefinitions>
-            <RowDefinition Height="300" />
+            <RowDefinition Height="*" MinHeight="300" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -82,7 +85,7 @@
                             Maximum="5"
                             Minimum="1"
                             Watermark="Select number of threads"
-                            Value="3" />
+                            Value="{Binding NumThreads}" />
                     </StackPanel>
                     <StackPanel
                         Margin="0,0,10,20"
@@ -131,6 +134,7 @@
                         </ComboBox>
                     </StackPanel>
                     <CheckBox
+                        Name="losslessCompressionMode"
                         VerticalAlignment="Center"
                         Classes="offset10_rl"
                         Content="Lossless Compression"
@@ -149,6 +153,21 @@
                         HorizontalAlignment="Center"
                         Foreground="White"
                         Text="Convert" />
+                </StackPanel>
+            </Button>
+            <Button
+                Classes="Primary"
+                Command="{Binding StopConversionCommand}"
+                IsEnabled="{Binding IsConverting}">
+                <StackPanel Orientation="Horizontal">
+                    <i:Icon
+                        Margin="2,0,5,0"
+                        FontSize="15"
+                        Value="mdi-cancel" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Foreground="White"
+                        Text="Stop" />
                 </StackPanel>
             </Button>
         </StackPanel>

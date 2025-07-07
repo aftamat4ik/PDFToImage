@@ -38,7 +38,13 @@ namespace PDFToImage.ViewModels
         // used to form log itself
         private readonly Queue<string> _logBuilder = new();
         private readonly object _logLock = new(); // as log is written from async methods
+        private readonly object _conversionLock = new();
         private const int MAX_LOG_SIZE = 200;
+        [ObservableProperty]
+        private bool _isConverting = false;
+        private bool shouldStopConversion = false;
+        [ObservableProperty]
+        private int _numThreads = 3;
 
         // attribute [RelayCommand] for async commands for some reason doesn't work so i had to do it manually
         public IAsyncRelayCommand ConvertFilesCommand { get; }
@@ -51,17 +57,18 @@ namespace PDFToImage.ViewModels
                 new JpgFormat()
             };
             SelectedFormat = AvailableFormats[0];
+            IsWebpSelected = SelectedFormat is WebpFormat;
+            if (IsWebpSelected && Quality < 80)
+            {
+                IsLossless = false;
+            }
 
             ConvertFilesCommand = new AsyncRelayCommand(ConvertFilesAsync, CanConvertFiles);
 
+            /* DEPRECATED - use separate generated overrides instead
             PropertyChanged += (s, e) =>
             {
-                //System.Diagnostics.Debug.WriteLine($"PropertyName = {e.PropertyName}");
-                if (e.PropertyName == nameof(SelectedFormat) || e.PropertyName == nameof(Quality))
-                {
-                    UpdateWebpSelectionState();
-                }
-            };
+            };*/
 
             SelectedFiles.CollectionChanged += (s, e) =>
             {
@@ -74,9 +81,6 @@ namespace PDFToImage.ViewModels
                 ClearFilesCommand.NotifyCanExecuteChanged();
                 ConvertFilesCommand.NotifyCanExecuteChanged();
             };
-
-
-            UpdateWebpSelectionState();
 
             // initial log message
             AppendLog(" ------- Welcome! ^-^ -----");
@@ -101,9 +105,19 @@ namespace PDFToImage.ViewModels
             ClearFilesCommand.NotifyCanExecuteChanged();
         }
 
-        private void UpdateWebpSelectionState(){
+        partial void OnSelectedFormatChanged(IOutputFormat? oldValue, IOutputFormat? newValue)
+        {
             IsWebpSelected = SelectedFormat is WebpFormat;
-            IsLossless = SelectedFormat is WebpFormat && Quality >= 100;
+            OnPropertyChanged(nameof(IsWebpSelected));
+        }
+
+        partial void OnQualityChanged(int oldValue, int newValue)
+        {
+            if (newValue < 80 && IsLossless)
+            {
+                IsLossless = false;
+                OnPropertyChanged(nameof(IsLossless));
+            }
         }
 
         private bool CanRemoveSelected()
@@ -162,15 +176,17 @@ namespace PDFToImage.ViewModels
 
         private async Task ConvertFilesAsync()
         {
-            if (Files == null || Files.Count == 0){
+            if (Files == null || Files.Count == 0) {
                 AppendLog("> No files: First Add files that will be converted!");
                 return;
             }
 
             if (SelectedFormat == null) {
-                AppendLog("> No format: Select format before conversion!");    
-                return; 
+                AppendLog("> No format: Select format before conversion!");
+                return;
             }
+
+            UpdateConversionState(true);
 
             var outputDir = MakeOutputDirectory();
 
@@ -189,17 +205,29 @@ namespace PDFToImage.ViewModels
 
             var convertedCount = 0;
 
-            using var semaphore = new SemaphoreSlim(3); // Limit to 3 concurrent conversions
-            var tasks = SelectedFiles.OfType<FileItem>().ToList().Select(async item =>
+            using var semaphore = new SemaphoreSlim(3); 
+            var tasks = Files.OfType<FileItem>().ToList().Select(async item =>
             {
                 await semaphore.WaitAsync(); // Acquire semaphore
+
+                lock (_conversionLock)
+                {
+                    if (shouldStopConversion)
+                    {
+                        semaphore.Release(); // Release semaphore
+                        return;
+                    }
+                }
 
                 var pureName = Path.GetFileNameWithoutExtension(item.FileName);
                 try
                 {
                     var outputPath = Path.Combine(outputDir, $"{pureName}.{SelectedFormat.Name.ToLower()}");
                     await SelectedFormat.DoConversion(item.FilePath, outputPath);
-                    Files?.Remove(item); // this is safe
+                    lock (_conversionLock)
+                    {
+                        Files?.Remove(item);
+                    }
                     AppendLog($"> Converted {pureName}");
                     Interlocked.Increment(ref convertedCount);
                 }
@@ -215,7 +243,7 @@ namespace PDFToImage.ViewModels
             await Task.WhenAll(tasks);
 
 
-            foreach (var item in Files.ToList()) // .ToList() actually duplicates original collection so we can remove it's elements safely
+            /*foreach (var item in Files.ToList()) // .ToList() actually duplicates original collection so we can remove it's elements safely
             {
                 var pureName = Path.GetFileNameWithoutExtension(item.FileName);
                 try
@@ -230,11 +258,38 @@ namespace PDFToImage.ViewModels
                 {
                     AppendLog($"> Error: can't convert file with name {pureName} to format {SelectedFormat.Name}!\n> {ex.Message}");
                 }
-            }
+            }*/
 
             AppendLog($"> Converted {convertedCount} files to {SelectedFormat.Name}{loselessStr}");
-            AppendLog($"> Files can be found in Output directory: {outputDir}.");
+            AppendLog($"> Files can be found in Output directory: {outputDir}");
             AppendLog($"> ---------- ^-^ ----------");
+
+            UpdateConversionState(false);
+        }
+
+        void UpdateConversionState(bool inConvertingState){
+            lock (_conversionLock)
+            {
+                IsConverting = inConvertingState;
+                OnPropertyChanged(nameof(IsConverting));
+                shouldStopConversion = false;
+                StopConversionCommand.NotifyCanExecuteChanged();
+            }
+        }
+
+        private bool CanStopConversion()
+        {
+            return IsConverting;
+        }
+
+        [RelayCommand(CanExecute = nameof(CanStopConversion))]
+        private void StopConversion()
+        {
+            lock (_conversionLock)
+            {
+                shouldStopConversion = true;
+            }
+            AppendLog("> Stopping conversion!");
         }
 
         /// <summary>
