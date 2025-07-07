@@ -56,6 +56,8 @@ namespace PDFToImage.ViewModels
         private bool shouldStopConversion = false;
         [ObservableProperty]
         private int _numThreads = 3;
+        [ObservableProperty]
+        private string _pdfPasswords = "";
 
         // attribute [RelayCommand] for async commands for some reason doesn't work so i had to do it manually
         public IAsyncRelayCommand ConvertFilesCommand { get; }
@@ -163,7 +165,7 @@ namespace PDFToImage.ViewModels
                 {
                     Directory.CreateDirectory(outputDirectory);
 
-                    AppendLog($"> Created output directory at {basePath}.");
+                    AppendLog($"> Created output directory at {outputDirectory}.");
                 }
 
                 //AppendLog($"> Output directory is : {outputDirectory}");
@@ -216,12 +218,14 @@ namespace PDFToImage.ViewModels
             SelectedFormat.MaxWidth = MaxWidth;
             SelectedFormat.MaxHeight = MaxHeight;
 
+            // split by /n and trim results
+            var passwords = PdfPasswords.Split('\n').Select(line => line.Trim()).ToList();
             // here we can set things like pdfPassword and so on
             var pdfOpenOptions = new ParsingOptions
             {
                 UseLenientParsing = true,
                 ClipPaths = true,
-                //Password TODO!!!
+                Passwords = passwords
             };
 
             AppendLog($"> Converting {Files.Count} files to {SelectedFormat.Name} {loselessStr}");

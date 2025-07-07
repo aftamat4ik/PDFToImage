@@ -11,9 +11,9 @@
     xmlns:vm="using:PDFToImage.ViewModels"
     Title="PDFToImage"
     Width="850"
-    Height="500"
+    Height="600"
     MinWidth="500"
-    MinHeight="450"
+    MinHeight="600"
     x:DataType="vm:MainWindowViewModel"
     Icon="/Assets/avalonia-logo.ico"
     SystemDecorations="Full"
@@ -66,107 +66,127 @@
                 BorderThickness="0"
                 CornerRadius="5"
                 Header="PDF Conversion Settings">
-                <WrapPanel Classes="separation5">
-                    <StackPanel VerticalAlignment="Top" Orientation="Vertical">
-                        <Label
-                            HorizontalAlignment="Left"
+                <StackPanel Orientation="Vertical">
+                    <WrapPanel Classes="separation5">
+                        <StackPanel VerticalAlignment="Top" Orientation="Vertical">
+                            <Label
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                FontSize="{DynamicResource FontSizeSmall}"
+                                Target="numThreads">
+                                Threads Number:
+                            </Label>
+                            <NumericUpDown
+                                Name="numThreads"
+                                VerticalAlignment="Center"
+                                Increment="1"
+                                Maximum="5"
+                                Minimum="1"
+                                Watermark="Select number of threads"
+                                Value="{Binding NumThreads}" />
+                        </StackPanel>
+                        <StackPanel VerticalAlignment="Top" Orientation="Vertical">
+                            <Label
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                FontSize="{DynamicResource FontSizeSmall}"
+                                Target="qualityNumeric">
+                                Quality:
+                            </Label>
+                            <NumericUpDown
+                                Name="qualityNumeric"
+                                VerticalAlignment="Center"
+                                Increment="10"
+                                Maximum="300"
+                                Minimum="10"
+                                Watermark="Select Image Quality"
+                                Value="{Binding Quality}" />
+                        </StackPanel>
+                        <StackPanel VerticalAlignment="Top" Orientation="Vertical">
+                            <Label
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                FontSize="{DynamicResource FontSizeSmall}"
+                                Target="conversionFormat">
+                                Format:
+                            </Label>
+                            <ComboBox
+                                Name="conversionFormat"
+                                VerticalAlignment="Center"
+                                ItemsSource="{Binding AvailableFormats}"
+                                PlaceholderText="Pick target Format"
+                                SelectedItem="{Binding SelectedFormat}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate DataType="interfaces:IOutputFormat">
+                                        <Panel>
+                                            <TextBlock Text="{Binding Name}" />
+                                        </Panel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                        <CheckBox
+                            Name="losslessCompressionMode"
                             VerticalAlignment="Center"
-                            FontSize="{DynamicResource FontSizeSmall}"
-                            Target="numThreads">
-                            Threads Number:
-                        </Label>
-                        <NumericUpDown
-                            Name="numThreads"
-                            VerticalAlignment="Center"
-                            Increment="1"
-                            Maximum="5"
-                            Minimum="1"
-                            Watermark="Select number of threads"
-                            Value="{Binding NumThreads}" />
-                    </StackPanel>
-                    <StackPanel VerticalAlignment="Top" Orientation="Vertical">
-                        <Label
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
-                            FontSize="{DynamicResource FontSizeSmall}"
-                            Target="qualityNumeric">
-                            Quality:
-                        </Label>
-                        <NumericUpDown
-                            Name="qualityNumeric"
-                            VerticalAlignment="Center"
-                            Increment="10"
-                            Maximum="300"
-                            Minimum="10"
-                            Watermark="Select Image Quality"
-                            Value="{Binding Quality}" />
-                    </StackPanel>
-                    <StackPanel VerticalAlignment="Top" Orientation="Vertical">
-                        <Label
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
-                            FontSize="{DynamicResource FontSizeSmall}"
-                            Target="conversionFormat">
-                            Format:
-                        </Label>
-                        <ComboBox
-                            Name="conversionFormat"
-                            VerticalAlignment="Center"
-                            ItemsSource="{Binding AvailableFormats}"
-                            PlaceholderText="Pick target Format"
-                            SelectedItem="{Binding SelectedFormat}">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate DataType="interfaces:IOutputFormat">
-                                    <Panel>
-                                        <TextBlock Text="{Binding Name}" />
-                                    </Panel>
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
-                    </StackPanel>
-                    <CheckBox
-                        Name="losslessCompressionMode"
-                        VerticalAlignment="Center"
-                        Classes="offset10_rl"
-                        Content="Lossless Compression"
-                        IsChecked="{Binding IsLossless}"
-                        IsEnabled="{Binding IsWebpSelected}"
-                        IsVisible="{Binding IsWebpSelected}" />
+                            Classes="offset10_rl"
+                            Content="Lossless Compression"
+                            IsChecked="{Binding IsLossless}"
+                            IsEnabled="{Binding IsWebpSelected}"
+                            IsVisible="{Binding IsWebpSelected}" />
 
-                    <StackPanel VerticalAlignment="Top" Orientation="Vertical">
-                        <Label
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
-                            FontSize="{DynamicResource FontSizeSmall}"
-                            Target="maxWidth">
-                            Max Width:
-                        </Label>
-                        <NumericUpDown
-                            Name="maxWidth"
-                            VerticalAlignment="Center"
-                            Increment="1"
-                            Maximum="10000"
-                            Minimum="50"
-                            Value="{Binding MaxWidth}" />
-                    </StackPanel>
-                    <StackPanel VerticalAlignment="Top" Orientation="Vertical">
-                        <Label
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
-                            FontSize="{DynamicResource FontSizeSmall}"
-                            Target="maxHeight">
-                            Max Height:
-                        </Label>
-                        <NumericUpDown
-                            Name="maxHeight"
-                            VerticalAlignment="Center"
-                            Increment="1"
-                            Maximum="10000"
-                            Minimum="50"
-                            Value="{Binding MaxHeight}" />
-                    </StackPanel>
-                </WrapPanel>
+                        <StackPanel VerticalAlignment="Top" Orientation="Vertical">
+                            <Label
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                FontSize="{DynamicResource FontSizeSmall}"
+                                Target="maxWidth">
+                                Max Width:
+                            </Label>
+                            <NumericUpDown
+                                Name="maxWidth"
+                                VerticalAlignment="Center"
+                                Increment="1"
+                                Maximum="10000"
+                                Minimum="50"
+                                Value="{Binding MaxWidth}" />
+                        </StackPanel>
+                        <StackPanel VerticalAlignment="Top" Orientation="Vertical">
+                            <Label
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                FontSize="{DynamicResource FontSizeSmall}"
+                                Target="maxHeight">
+                                Max Height:
+                            </Label>
+                            <NumericUpDown
+                                Name="maxHeight"
+                                VerticalAlignment="Center"
+                                Increment="1"
+                                Maximum="10000"
+                                Minimum="50"
+                                Value="{Binding MaxHeight}" />
+                        </StackPanel>
+                    </WrapPanel>
+                    <Border
+                        Padding="5,0"
+                        BorderBrush="Orange"
+                        BorderThickness="1"
+                        CornerRadius="3, 3, 3, 3">
+                        <StackPanel>
+                            <TextBox
+                                Name="pdfPasswords"
+                                MinHeight="70"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                AcceptsReturn="True"
+                                FontSize="{DynamicResource FontSizeSmall}"
+                                Text="{Binding PdfPasswords, Mode=TwoWay}"
+                                Watermark="PDF Passwords" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
             </uv:GroupBox>
+
             <Button Command="{Binding ConvertFilesCommand}">
                 <StackPanel Orientation="Horizontal">
                     <i:Icon
