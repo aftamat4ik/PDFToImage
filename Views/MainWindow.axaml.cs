@@ -58,8 +58,8 @@ namespace PDFToImage.Views
                 AllowMultiple = true,
                 FileTypeFilter = new[]
                 {
-                    //FilePickerFileTypes.Pdf,
-                    FilePickerFileTypes.ImageAll,
+                    FilePickerFileTypes.Pdf,
+                    //FilePickerFileTypes.ImageAll,
                     new FilePickerFileType("All Files") { Patterns = new[] { "*.*" } }
                 }
             };

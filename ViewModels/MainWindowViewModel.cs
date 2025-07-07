@@ -2,8 +2,14 @@
 using CommunityToolkit.Mvvm.Input;
 using PDFToImage.Interfaces;
 using PDFToImage.Models;
+using SkiaSharp;
 using System.Collections.ObjectModel;
 using System.Text;
+using UglyToad.PdfPig.Graphics.Colors;
+using UglyToad.PdfPig;
+using UglyToad.PdfPig.Rendering.Skia;
+using System.Linq;
+using UglyToad.PdfPig.Graphics;
 
 namespace PDFToImage.ViewModels
 {
@@ -32,6 +38,12 @@ namespace PDFToImage.ViewModels
 
         [ObservableProperty]
         private int _quality = Helpers.DEFAULT_QUALITY;
+
+        [ObservableProperty]
+        private int _maxWidth = 2048;
+
+        [ObservableProperty]
+        private int _maxHeight = 2048;
 
         [ObservableProperty]
         private string _log = "";
@@ -121,7 +133,7 @@ namespace PDFToImage.ViewModels
 
         private bool CanRemoveSelected()
         {
-            return SelectedFiles?.Count > 0;
+            return SelectedFiles?.Count > 0 && !IsConverting;
         }
 
         [RelayCommand(CanExecute = nameof(CanClearFiles))]
@@ -134,7 +146,7 @@ namespace PDFToImage.ViewModels
 
         private bool CanClearFiles()
         {
-            return Files?.Count > 0;
+            return Files?.Count > 0 && !IsConverting;
         }
 
         private string MakeOutputDirectory()
@@ -154,7 +166,7 @@ namespace PDFToImage.ViewModels
                     AppendLog($"> Created output directory at {basePath}.");
                 }
 
-                AppendLog($"> Output directory is : {outputDirectory}");
+                //AppendLog($"> Output directory is : {outputDirectory}");
 
                 return outputDirectory;
             }
@@ -201,15 +213,26 @@ namespace PDFToImage.ViewModels
                 }
             }
             SelectedFormat.ConversionQuality = Quality;
+            SelectedFormat.MaxWidth = MaxWidth;
+            SelectedFormat.MaxHeight = MaxHeight;
 
-            AppendLog($"> converting {Files.Count} files to {SelectedFormat.Name} {loselessStr}");
+            // here we can set things like pdfPassword and so on
+            var pdfOpenOptions = new ParsingOptions
+            {
+                UseLenientParsing = true,
+                ClipPaths = true,
+                //Password TODO!!!
+            };
 
-            var convertedCount = 0;
+            AppendLog($"> Converting {Files.Count} files to {SelectedFormat.Name} {loselessStr}");
+            int convertedCount = 0;
 
             using var semaphore = new SemaphoreSlim(3); 
             var tasks = Files.OfType<FileItem>().ToList().Select(async item =>
             {
                 await semaphore.WaitAsync(); // Acquire semaphore
+
+                AppendLog($"> ... working ... ");
 
                 lock (_conversionLock)
                 {
@@ -223,8 +246,22 @@ namespace PDFToImage.ViewModels
                 var pureName = Path.GetFileNameWithoutExtension(item.FileName);
                 try
                 {
-                    var outputPath = Path.Combine(outputDir, $"{pureName}.{SelectedFormat.Name.ToLower()}");
-                    await SelectedFormat.DoConversion(item.FilePath, outputPath);
+                    using var inputStream = new FileStream(item.FilePath, FileMode.Open, FileAccess.Read);
+                    byte[] pdfBytes = File.ReadAllBytes(item.FilePath);
+
+
+                    using var currentPdfStream = new MemoryStream(pdfBytes, writable: false);
+                    using var currentDocument = PdfDocument.Open(currentPdfStream, pdfOpenOptions);
+
+                    // make new folder for every new pdf file
+                    var relativeOutputPath = Path.Combine(outputDir, pureName);
+                    if (!Directory.Exists(relativeOutputPath))
+                    {
+                        Directory.CreateDirectory(relativeOutputPath);
+                    }
+
+                    await SelectedFormat.DoConversion(currentDocument, relativeOutputPath);
+
                     lock (_conversionLock)
                     {
                         Files?.Remove(item);
@@ -243,24 +280,6 @@ namespace PDFToImage.ViewModels
             });
             await Task.WhenAll(tasks);
 
-
-            /*foreach (var item in Files.ToList()) // .ToList() actually duplicates original collection so we can remove it's elements safely
-            {
-                var pureName = Path.GetFileNameWithoutExtension(item.FileName);
-                try
-                {
-                    var outputPath = Path.Combine(outputDir, $"{pureName}.{SelectedFormat.Name.ToLower()}");
-                    await SelectedFormat.DoConversion(item.FilePath, outputPath);
-                    Files?.Remove(item); // this is safe
-                    AppendLog($"> Converted {pureName}");
-                    convertedCount++;
-                }
-                catch (Exception ex)
-                {
-                    AppendLog($"> Error: can't convert file with name {pureName} to format {SelectedFormat.Name}!\n> {ex.Message}");
-                }
-            }*/
-
             AppendLog($"> Converted {convertedCount} files to {SelectedFormat.Name}{loselessStr}");
             AppendLog($"> Files can be found in Output directory:\n> {outputDir}");
             AppendLog($"> ---------- ^-^ ----------");
@@ -275,6 +294,8 @@ namespace PDFToImage.ViewModels
                 OnPropertyChanged(nameof(IsConverting));
                 shouldStopConversion = false;
                 StopConversionCommand.NotifyCanExecuteChanged();
+                RemoveSelectedCommand.NotifyCanExecuteChanged();
+                ClearFilesCommand.NotifyCanExecuteChanged();
             }
         }
 

@@ -5,8 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
+using UglyToad.PdfPig;
+using UglyToad.PdfPig.Graphics.Colors;
+using UglyToad.PdfPig.Rendering.Skia;
 
 namespace PDFToImage.Models
 {
@@ -24,29 +28,54 @@ namespace PDFToImage.Models
         [ObservableProperty]
         private int _conversionQuality = 100;
 
-        public async Task DoConversion(string inputPath, string outputPath)
+        [ObservableProperty]
+        private float _scale = 1.0f;
+
+        [ObservableProperty]
+        private int _maxWidth = 1000;
+
+        [ObservableProperty]
+        private int _maxHeight = 1000;
+
+        public async Task DoConversion(PdfDocument? document, string outputPath)
         {
             await Task.Run(() =>
             {
-                // NOTE: 'using' in c# works as defer so all this will be closet at end of the scope
-                using var inputStream = new FileStream(inputPath, FileMode.Open, FileAccess.Read);
-                using var skInputStream = new SkiaSharp.SKManagedStream(inputStream);
-                using var bitmap = SKBitmap.Decode(skInputStream);
+                if (document == null)
+                {
+                    throw new InvalidOperationException($"Error: PDF document not valid");
+                }
 
-                if (bitmap == null) 
-                    throw new InvalidOperationException($"Failed to decode image from {inputPath}.");
+                document.AddSkiaPageFactory(); // this allows rendering documents into images
 
-                // Set WebP encoder options
-                var compressionType = IsLossless ? SKWebpEncoderCompression.Lossless : SKWebpEncoderCompression.Lossy;
-                var webpOptions = new SKWebpEncoderOptions(compressionType, ConversionQuality);
+                // for all pages
+                for (int i = 1; i <= document.NumberOfPages; i++) // NOTE: index starts from 1 because GetPageAsSKBitmap requires this
+                {
+                    var bitmap = document.GetPageAsSKBitmap(i, Scale, RGBColor.White);
+                    if (bitmap.Width > MaxWidth || bitmap.Height > MaxHeight) // resize only if bigger
+                    {
+                        bitmap = Helpers.ResizeBitmap(bitmap, MaxWidth, MaxHeight);
+                    }
 
-                using var outputStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write);
-                using var skOutputStream = new SkiaSharp.SKManagedWStream(outputStream, false);
-                using var pixmap = bitmap.PeekPixels();
+                    if (bitmap == null)
+                        throw new InvalidOperationException($"Failed to render page {i}.");
 
-                if (!pixmap.Encode(skOutputStream, webpOptions))
-                    // this all goes to the log...
-                    throw new InvalidOperationException($"Failed to encode and write image to {outputPath}.");
+                    using (bitmap) // defer bitmap e.g. free it at end of the block
+                    {
+                        // Set WebP encoder options
+                        var compressionType = IsLossless ? SKWebpEncoderCompression.Lossless : SKWebpEncoderCompression.Lossy;
+                        var webpOptions = new SKWebpEncoderOptions(compressionType, ConversionQuality);
+
+                        var relativePath = Path.Combine(outputPath, $"page_{i}.{Name.ToLower()}");
+
+                        using var outputStream = new FileStream(relativePath, FileMode.Create, FileAccess.Write);
+                        using var skOutputStream = new SkiaSharp.SKManagedWStream(outputStream, false);
+                        using var pixmap = bitmap.PeekPixels();
+                        if (!pixmap.Encode(skOutputStream, webpOptions))
+                            // this all goes to the log...
+                            throw new InvalidOperationException($"Failed to encode and write image to {relativePath}.");
+                    }
+                };
             });
         }
     }
@@ -59,21 +88,46 @@ namespace PDFToImage.Models
         [ObservableProperty]
         private int _conversionQuality = 100;
 
-        public async Task DoConversion(string inputPath, string outputPath)
+        [ObservableProperty]
+        private float _scale = 1.0f;
+
+        [ObservableProperty]
+        private int _maxWidth = 1000;
+
+        [ObservableProperty]
+        private int _maxHeight = 1000;
+
+        public async Task DoConversion(PdfDocument? document, string outputPath)
         {
             await Task.Run(() =>
             {
-                using var inputStream = new FileStream(inputPath, FileMode.Open, FileAccess.Read);
-                using var skInputStream = new SkiaSharp.SKManagedStream(inputStream);
-                using var bitmap = SKBitmap.Decode(skInputStream);
+                if (document == null)
+                {
+                    throw new InvalidOperationException($"Error: PDF document not valid");
+                }
 
-                if (bitmap == null)
-                    throw new InvalidOperationException($"Failed to decode image from {inputPath}.");
+                document.AddSkiaPageFactory(); // this allows rendering documents into images
 
-                using var outputStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write);
-                if(!bitmap.Encode(outputStream, SKEncodedImageFormat.Png, ConversionQuality))
-                    throw new InvalidOperationException($"Failed to encode and write image to {outputPath}.");
+                // for all pages
+                for (int i = 1; i <= document.NumberOfPages; i++)
+                {
+                    var bitmap = document.GetPageAsSKBitmap(i, Scale, RGBColor.White);
+                    if (bitmap.Width > MaxWidth || bitmap.Height > MaxHeight) // resize only if bigger
+                    {
+                        bitmap = Helpers.ResizeBitmap(bitmap, MaxWidth, MaxHeight);
+                    }
 
+                    if (bitmap == null)
+                        throw new InvalidOperationException($"Failed to render page {i}.");
+
+                    using (bitmap)
+                    {
+                        string? relativePath = Path.Combine(outputPath, $"page_{i}.{Name.ToLower()}");
+                        using var outputStream = new FileStream(relativePath, FileMode.Create, FileAccess.Write);
+                        if (!bitmap.Encode(outputStream, SKEncodedImageFormat.Png, ConversionQuality))
+                            throw new InvalidOperationException($"Failed to encode and write image to {relativePath}.");
+                    }
+                }
             });
         }
     }
@@ -86,20 +140,45 @@ namespace PDFToImage.Models
         [ObservableProperty]
         private int _conversionQuality = 100;
 
-        public async Task DoConversion(string inputPath, string outputPath)
+        [ObservableProperty]
+        private float _scale = 1.0f;
+
+        [ObservableProperty]
+        private int _maxWidth = 1000;
+
+        [ObservableProperty]
+        private int _maxHeight = 1000;
+
+        public async Task DoConversion(PdfDocument? document, string outputPath)
         {
             await Task.Run(() =>
             {
-                using var inputStream = new FileStream(inputPath, FileMode.Open, FileAccess.Read);
-                using var skInputStream = new SkiaSharp.SKManagedStream(inputStream);
-                using var bitmap = SKBitmap.Decode(skInputStream);
-                if (bitmap == null)
-                    throw new InvalidOperationException($"Failed to decode image from {inputPath}.");
+                if (document == null)
+                {
+                    throw new InvalidOperationException($"Error: PDF document not valid");
+                }
 
-                using var outputStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write);
-                
-                if (!bitmap.Encode(outputStream, SKEncodedImageFormat.Jpeg, ConversionQuality))
-                    throw new InvalidOperationException($"Failed to encode and write image to {outputPath}.");
+                document.AddSkiaPageFactory(); // this allows rendering documents into images
+
+                // for all pages
+                for (int i = 1; i <= document.NumberOfPages; i++)
+                {
+                    var bitmap = document.GetPageAsSKBitmap(i, Scale, RGBColor.White);
+                    if (bitmap.Width > MaxWidth || bitmap.Height > MaxHeight) // resize only if bigger
+                    {
+                        bitmap = Helpers.ResizeBitmap(bitmap, MaxWidth, MaxHeight);
+                    }
+
+                    if (bitmap == null)
+                        throw new InvalidOperationException($"Failed to render page {i}.");
+                    using (bitmap)
+                    {
+                        string? relativePath = Path.Combine(outputPath, $"page_{i}.{Name.ToLower()}");
+                        using var outputStream = new FileStream(relativePath, FileMode.Create, FileAccess.Write);
+                        if (!bitmap.Encode(outputStream, SKEncodedImageFormat.Jpeg, ConversionQuality))
+                            throw new InvalidOperationException($"Failed to encode and write image to {relativePath}.");
+                    }
+                }
             });
         }
     }

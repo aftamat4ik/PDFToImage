@@ -19,7 +19,7 @@
         <!-- <StyleInclude Source="avares://Citrus.Avalonia/Rust.xaml"/> -->
         <!-- <StyleInclude Source="avares://Citrus.Avalonia/Candy.xaml"/> -->
         <!-- <StyleInclude Source="avares://Citrus.Avalonia/Magma.xaml" /> -->
-        <StyleInclude Source="avares://Citrus.Avalonia/Candy.xaml" />
+        <!-- <StyleInclude Source="avares://Citrus.Avalonia/Candy.xaml" /> -->
         <StyleInclude Source="avares://UVtools.AvaloniaControls/Controls.axaml" />
         <StyleInclude Source="/CommonStyleResources.axaml" />
         <StyleInclude Source="/CommonStyles.axaml" />

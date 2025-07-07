@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UglyToad.PdfPig;
 
 namespace PDFToImage.Interfaces
 {
@@ -12,6 +13,12 @@ namespace PDFToImage.Interfaces
 
         int ConversionQuality { get; set; }
 
-        Task DoConversion(string inputPath, string outputPath);
+        float Scale { get; set; }
+
+        int MaxWidth { get; set; }
+
+        int MaxHeight { get; set; }
+
+        Task DoConversion(PdfDocument? document, string outputPath);
     }
 }

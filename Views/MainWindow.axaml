@@ -10,10 +10,10 @@
     xmlns:uv="clr-namespace:UVtools.AvaloniaControls;assembly=UVtools.AvaloniaControls"
     xmlns:vm="using:PDFToImage.ViewModels"
     Title="PDFToImage"
-    Width="800"
-    Height="450"
+    Width="850"
+    Height="500"
     MinWidth="500"
-    MinHeight="350"
+    MinHeight="450"
     x:DataType="vm:MainWindowViewModel"
     Icon="/Assets/avalonia-logo.ico"
     SystemDecorations="Full"
@@ -38,7 +38,7 @@
         <Border
             Grid.Row="0"
             Grid.Column="0"
-            BorderBrush="Teal"
+            BorderBrush="RoyalBlue"
             BorderThickness="1">
             <ListBox
                 x:Name="fileItemsList"
@@ -61,16 +61,13 @@
             Orientation="Vertical">
             <uv:GroupBox
                 Padding="10,0,10,0"
-                Background="Teal"
-                BorderBrush="BlueViolet"
+                Background="RoyalBlue"
+                BorderBrush="Orange"
                 BorderThickness="0"
                 CornerRadius="5"
-                Header="Conversion Settings">
-                <WrapPanel>
-                    <StackPanel
-                        Margin="0,0,10,20"
-                        VerticalAlignment="Top"
-                        Orientation="Vertical">
+                Header="PDF Conversion Settings">
+                <WrapPanel Classes="separation5">
+                    <StackPanel VerticalAlignment="Top" Orientation="Vertical">
                         <Label
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
@@ -87,10 +84,7 @@
                             Watermark="Select number of threads"
                             Value="{Binding NumThreads}" />
                     </StackPanel>
-                    <StackPanel
-                        Margin="0,0,10,20"
-                        VerticalAlignment="Top"
-                        Orientation="Vertical">
+                    <StackPanel VerticalAlignment="Top" Orientation="Vertical">
                         <Label
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
@@ -107,10 +101,7 @@
                             Watermark="Select Image Quality"
                             Value="{Binding Quality}" />
                     </StackPanel>
-                    <StackPanel
-                        Margin="10,0,0,20"
-                        VerticalAlignment="Top"
-                        Orientation="Vertical">
+                    <StackPanel VerticalAlignment="Top" Orientation="Vertical">
                         <Label
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
@@ -141,6 +132,39 @@
                         IsChecked="{Binding IsLossless}"
                         IsEnabled="{Binding IsWebpSelected}"
                         IsVisible="{Binding IsWebpSelected}" />
+
+                    <StackPanel VerticalAlignment="Top" Orientation="Vertical">
+                        <Label
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            FontSize="{DynamicResource FontSizeSmall}"
+                            Target="maxWidth">
+                            Max Width:
+                        </Label>
+                        <NumericUpDown
+                            Name="maxWidth"
+                            VerticalAlignment="Center"
+                            Increment="1"
+                            Maximum="10000"
+                            Minimum="50"
+                            Value="{Binding MaxWidth}" />
+                    </StackPanel>
+                    <StackPanel VerticalAlignment="Top" Orientation="Vertical">
+                        <Label
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            FontSize="{DynamicResource FontSizeSmall}"
+                            Target="maxHeight">
+                            Max Height:
+                        </Label>
+                        <NumericUpDown
+                            Name="maxHeight"
+                            VerticalAlignment="Center"
+                            Increment="1"
+                            Maximum="10000"
+                            Minimum="50"
+                            Value="{Binding MaxHeight}" />
+                    </StackPanel>
                 </WrapPanel>
             </uv:GroupBox>
             <Button Command="{Binding ConvertFilesCommand}">
