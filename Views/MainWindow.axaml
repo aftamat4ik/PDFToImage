@@ -15,7 +15,7 @@
     MinWidth="500"
     MinHeight="600"
     x:DataType="vm:MainWindowViewModel"
-    Icon="/Assets/avalonia-logo.ico"
+    Icon="/Assets/ic.ico"
     SystemDecorations="Full"
     mc:Ignorable="d">
 
@@ -172,17 +172,16 @@
                         BorderBrush="Orange"
                         BorderThickness="1"
                         CornerRadius="3, 3, 3, 3">
-                        <StackPanel>
-                            <TextBox
-                                Name="pdfPasswords"
-                                MinHeight="70"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Stretch"
-                                AcceptsReturn="True"
-                                FontSize="{DynamicResource FontSizeSmall}"
-                                Text="{Binding PdfPasswords, Mode=TwoWay}"
-                                Watermark="PDF Passwords" />
-                        </StackPanel>
+                        <TextBox
+                            Name="pdfPasswords"
+                            MinHeight="70"
+                            MaxHeight="95"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            AcceptsReturn="True"
+                            FontSize="{DynamicResource FontSizeSmall}"
+                            Text="{Binding PdfPasswords, Mode=TwoWay}"
+                            Watermark="PDF Passwords" />
                     </Border>
                 </StackPanel>
             </uv:GroupBox>

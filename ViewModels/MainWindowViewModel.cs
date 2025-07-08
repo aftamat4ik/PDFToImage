@@ -15,8 +15,6 @@ namespace PDFToImage.ViewModels
 {
     public partial class MainWindowViewModel : ViewModelBase
     {
-        public string Greeting { get; } = "Welcome to Avalonia!";
-
         [ObservableProperty]
         private ObservableCollection<IOutputFormat> _availableFormats = new();
 
@@ -63,6 +61,7 @@ namespace PDFToImage.ViewModels
         public IAsyncRelayCommand ConvertFilesCommand { get; }
 
         public MainWindowViewModel() {
+            // if you want to extend amount of supported formats, you should add them in here
             AvailableFormats = new ObservableCollection<IOutputFormat>
             {
                 new WebpFormat(),
@@ -70,6 +69,7 @@ namespace PDFToImage.ViewModels
                 new JpgFormat()
             };
             SelectedFormat = AvailableFormats[0];
+
             IsWebpSelected = SelectedFormat is WebpFormat;
             if (IsWebpSelected && Quality < Helpers.DEFAULT_QUALITY)
             {
@@ -99,11 +99,12 @@ namespace PDFToImage.ViewModels
             AppendLog(" ------- Welcome! ^-^ -----");
         }
 
-        [RelayCommand(CanExecute = nameof(CanRemoveSelected))] // CanExecute here enables and disables the button under the hood
+        [RelayCommand(CanExecute = nameof(CanRemoveSelected))] // CanExecute here enables and disables bound button under the hood
         private void RemoveSelected()
         {
             if (SelectedFiles == null) return;
             AppendLog("> Removing selected items!");
+
             var toRemove = SelectedFiles.ToList(); // somehow i can't cast to <FileItem> here...
             foreach (var item in toRemove)
             {
