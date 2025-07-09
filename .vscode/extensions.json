@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "nromanov.dotnet-meteor",
+        "ms-dotnettools.csdevkit",
+        "ms-dotnettools.csharp",
+        "AvaloniaTeam.vscode-avalonia"
+    ]
+}

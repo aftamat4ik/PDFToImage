@@ -27,6 +27,9 @@ namespace PDFToImage.ViewModels
         [ObservableProperty]
         private ObservableCollection<object> _selectedFiles = new();
 
+        [ObservableProperty]
+        private string _outputFolder = "";
+
         // webp allows to loseless compression therefore i have to separate it's logic
         [ObservableProperty]
         private bool _isWebpSelected = false;
@@ -61,6 +64,8 @@ namespace PDFToImage.ViewModels
         public IAsyncRelayCommand ConvertFilesCommand { get; }
 
         public MainWindowViewModel() {
+            OutputFolder = MakeOutputDirectory();
+
             // if you want to extend amount of supported formats, you should add them in here
             AvailableFormats = new ObservableCollection<IOutputFormat>
             {
@@ -68,9 +73,10 @@ namespace PDFToImage.ViewModels
                 new PngFormat(),
                 new JpgFormat()
             };
-            SelectedFormat = AvailableFormats[0];
 
+            SelectedFormat = AvailableFormats[0];
             IsWebpSelected = SelectedFormat is WebpFormat;
+
             if (IsWebpSelected && Quality < Helpers.DEFAULT_QUALITY)
             {
                 IsLossless = false;
@@ -150,6 +156,15 @@ namespace PDFToImage.ViewModels
         private bool CanClearFiles()
         {
             return Files?.Count > 0 && !IsConverting;
+        }
+
+        [RelayCommand]
+        private void OpenOutputFolder()
+        {
+            if (Directory.Exists(OutputFolder))
+                Helpers.OpenFolder(OutputFolder);
+            else
+                AppendLog($"> Directory not found {OutputFolder}");
         }
 
         private string MakeOutputDirectory()
@@ -285,6 +300,7 @@ namespace PDFToImage.ViewModels
             });
             await Task.WhenAll(tasks);
 
+            OutputFolder = outputDir;
             AppendLog($"> Converted {convertedCount} files to {SelectedFormat.Name}{loselessStr}");
             AppendLog($"> Files can be found in Output directory:\n> {outputDir}");
             AppendLog($"> ---------- ^-^ ----------");

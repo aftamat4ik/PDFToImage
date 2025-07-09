@@ -226,7 +226,7 @@
                     <i:Icon
                         Margin="2,0,5,0"
                         FontSize="15"
-                        Value="mdi-folder" />
+                        Value="mdi-plus-box-multiple" />
                     <TextBlock
                         HorizontalAlignment="Center"
                         Foreground="White"
@@ -258,6 +258,18 @@
                         HorizontalAlignment="Center"
                         Foreground="White"
                         Text="Remove Selected" />
+                </StackPanel>
+            </Button>
+            <Button Name="openOutputFolder" Command="{Binding OpenOutputFolderCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <i:Icon
+                        Margin="2,0,5,0"
+                        FontSize="15"
+                        Value="mdi-folder" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Foreground="White"
+                        Text="Open Output" />
                 </StackPanel>
             </Button>
         </WrapPanel>
