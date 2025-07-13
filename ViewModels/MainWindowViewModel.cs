@@ -1,17 +1,18 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿/*
+PDFToImage Converter
+
+Copyright (c) 2025 aftamat4ik
+
+Licensed under the MIT License. 
+See LICENSE.txt in the project root for license information. */
+
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PDFToImage.Interfaces;
 using PDFToImage.Models;
-using SkiaSharp;
 using System.Collections.ObjectModel;
-using System.Text;
-using UglyToad.PdfPig.Graphics.Colors;
 using UglyToad.PdfPig;
-using UglyToad.PdfPig.Rendering.Skia;
-using System.Linq;
-using UglyToad.PdfPig.Graphics;
 using PDFToImage.Localisation;
-using System.Text.RegularExpressions;
 
 namespace PDFToImage.ViewModels
 {

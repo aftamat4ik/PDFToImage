@@ -1,4 +1,12 @@
-﻿using Avalonia.Markup.Xaml;
+﻿/*
+PDFToImage Converter
+
+Copyright (c) 2025 aftamat4ik
+
+Licensed under the MIT License. 
+See LICENSE.txt in the project root for license information. */
+
+using Avalonia.Markup.Xaml;
 using PDFToImage.Localisation;
 using System;
 using System.Collections.Generic;
