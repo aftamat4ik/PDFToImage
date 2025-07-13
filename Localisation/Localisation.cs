@@ -112,6 +112,49 @@ namespace PDFToImage.Localisation
                     { "ru-RU", "Открыть папку" }
                 }
             },
+            // some log entries
+            { "WELCOME_BANNER", new Dictionary<string, string>
+                {
+                    { "en-EN", " ------- Welcome! ^-^ ----- " },
+                    { "de-DE", " ------- Willkommen! ^-^ ----- " },
+                    { "ru-RU", " ------- Добро пожаловать! ^-^ ----- " }
+                }
+            },
+            { "LOG_OUTPUT_FOLDER_SET", new Dictionary<string, string>
+                {
+                    { "en-EN", "> Output folder set to: {0}" },
+                    { "de-DE", "> Ausgabeordner festgelegt auf: {0}" },
+                    { "ru-RU", "> Папка вывода установлена на: {0}" }
+                }
+            },
+            { "LOADED_CULTURE", new Dictionary<string, string>
+                {
+                    { "en-EN", "> Loaded culture: {0}" },
+                    { "de-DE", "> Geladene Sprache: {0}" },
+                    { "ru-RU", "> Загружена локализация: {0}" }
+                }
+            },
+            { "SUPPORT_THE_AUTHOR", new Dictionary<string, string>
+                {
+                    { "en-EN", "> Support the author, he is poor man: {0}" },
+                    { "de-DE", "> Unterstützen Sie den Autor: {0}" },
+                    { "ru-RU", "> Поддержите автора тушенкой, автор практически бомж: {0}" }
+                }
+            },
+            { "LOG_CONVERTED_FILES", new Dictionary<string, string>
+                {
+                    { "en-EN", "> Converted {0} files to {1}{2}" },
+                    { "de-DE", "> {0} Dateien konvertiert in {1}{2}" },
+                    { "ru-RU", "> Конвертировано файлов: {0} в формат {1}{2}" }
+                }
+            },
+            { "LOG_OUTPUT_DIR", new Dictionary<string, string>
+                {
+                    { "en-EN", "> Files can be found in Output directory:\n> {0}" },
+                    { "de-DE", "> Dateien befinden sich im Ausgabeordner:\n> {0}" },
+                    { "ru-RU", "> Файлы находятся в папке вывода:\n> {0}" }
+                }
+            },
         };
     }
 

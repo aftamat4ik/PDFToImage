@@ -105,9 +105,17 @@ namespace PDFToImage.ViewModels
             };
 
             // initial log message
-            AppendLog(" ------- Welcome! ^-^ -----");
-            AppendLog($"> Output Folder set to {OutputFolder}");
-            AppendLog($"> Loaded culture: {L.CurrentCulture}");
+            AppendLog(L.Get("WELCOME_BANNER"));
+            //AppendLog(" ------- Welcome! ^-^ ----- ");
+
+            AppendLog(string.Format(L.Get("LOG_OUTPUT_FOLDER_SET"), OutputFolder));
+            //AppendLog($"> Output Folder set to: {OutputFolder}");
+
+            AppendLog(string.Format(L.Get("LOADED_CULTURE"), L.CurrentCulture));
+            //AppendLog($"> Loaded culture: {L.CurrentCulture}");
+
+            AppendLog(string.Format(L.Get("SUPPORT_THE_AUTHOR"), "https://boosty.to/aftamat4ik"));
+            //AppendLog($"> Support the author: https://boosty.to/aftamat4ik");
         }
 
         [RelayCommand(CanExecute = nameof(CanRemoveSelected))] // CanExecute here enables and disables bound button under the hood
@@ -298,8 +306,12 @@ namespace PDFToImage.ViewModels
             });
             await Task.WhenAll(tasks);
 
-            AppendLog($"> Converted {convertedCount} files to {SelectedFormat.Name}{loselessStr}");
-            AppendLog($"> Files can be found in Output directory:\n> {outputDir}");
+            //AppendLog($"> Converted {convertedCount} files to {SelectedFormat.Name}{loselessStr}");
+            AppendLog(string.Format(L.Get("LOG_CONVERTED_FILES"), convertedCount, SelectedFormat.Name, loselessStr));
+
+            //AppendLog($"> Files can be found in Output directory:\n> {outputDir}");
+            AppendLog(string.Format(L.Get("LOG_OUTPUT_DIR"), outputDir));
+            
             AppendLog($"> ---------- ^-^ ----------");
 
             UpdateConversionState(false);
