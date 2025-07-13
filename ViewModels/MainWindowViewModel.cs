@@ -10,6 +10,8 @@ using UglyToad.PdfPig;
 using UglyToad.PdfPig.Rendering.Skia;
 using System.Linq;
 using UglyToad.PdfPig.Graphics;
+using PDFToImage.Localisation;
+using System.Text.RegularExpressions;
 
 namespace PDFToImage.ViewModels
 {
@@ -64,7 +66,7 @@ namespace PDFToImage.ViewModels
         public IAsyncRelayCommand ConvertFilesCommand { get; }
 
         public MainWindowViewModel() {
-            OutputFolder = MakeOutputDirectory();
+            OutputFolder = Helpers.GetOutputDirectory();
 
             // if you want to extend amount of supported formats, you should add them in here
             AvailableFormats = new ObservableCollection<IOutputFormat>
@@ -103,6 +105,8 @@ namespace PDFToImage.ViewModels
 
             // initial log message
             AppendLog(" ------- Welcome! ^-^ -----");
+            AppendLog($"> Output Folder set to {OutputFolder}");
+            AppendLog($"> Loaded culture: {L.CurrentCulture}");
         }
 
         [RelayCommand(CanExecute = nameof(CanRemoveSelected))] // CanExecute here enables and disables bound button under the hood
@@ -167,29 +171,21 @@ namespace PDFToImage.ViewModels
                 AppendLog($"> Directory not found {OutputFolder}");
         }
 
-        private string MakeOutputDirectory()
+        /// <summary>
+        /// Creates new output directory based on current timestamp and returns it's path
+        /// </summary>
+        private string CreateNewOutputDirectory()
         {
             AppendLog($"> Checking Output Directory ... ");
 
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
-            if (Directory.Exists(basePath))
-            {
-                // places all files into timestamp directory to separate results of different conversions
-                string outputDirectory = System.IO.Path.Combine(basePath, "Output", Helpers.GetTimeStamp());
-                // make sure output dir exists
-                if (!Directory.Exists(outputDirectory))
-                {
-                    Directory.CreateDirectory(outputDirectory);
-
-                    AppendLog($"> Created output directory at {outputDirectory}.");
-                }
-
-                //AppendLog($"> Output directory is : {outputDirectory}");
-
-                return outputDirectory;
-            }
-            else
+            var outputDirectory = Helpers.MakeDirectories(basePath, "Output", Helpers.GetTimeStamp());
+            if (outputDirectory == null || !Directory.Exists(outputDirectory))
                 throw new InvalidOperationException($"Somehow current base directory not found in your system!");
+            AppendLog($"> Created output directory at {outputDirectory}.");
+            
+            OutputFolder = outputDirectory;
+            return outputDirectory;
         }
 
         private bool CanConvertFiles()
@@ -219,7 +215,8 @@ namespace PDFToImage.ViewModels
 
             UpdateConversionState(true);
 
-            var outputDir = MakeOutputDirectory();
+            var outputDir = CreateNewOutputDirectory();
+            AppendLog($"> Generating new Output Directory {outputDir}");
 
             var loselessStr = "";
             if (SelectedFormat is WebpFormat swp) {
@@ -300,7 +297,6 @@ namespace PDFToImage.ViewModels
             });
             await Task.WhenAll(tasks);
 
-            OutputFolder = outputDir;
             AppendLog($"> Converted {convertedCount} files to {SelectedFormat.Name}{loselessStr}");
             AppendLog($"> Files can be found in Output directory:\n> {outputDir}");
             AppendLog($"> ---------- ^-^ ----------");
@@ -331,6 +327,9 @@ namespace PDFToImage.ViewModels
             lock (_conversionLock)
             {
                 shouldStopConversion = true;
+            }
+            if (ConvertFilesCommand.CanBeCanceled) {
+                ConvertFilesCommand.Cancel();
             }
             AppendLog("> Stopping conversion!");
         }

@@ -12,6 +12,7 @@ namespace PDFToImage
     {
         public const int DEFAULT_QUALITY = 80;
         public const int MAX_LOG_SIZE = 200;
+        public const string LOCALE_SETTING = "locale";
 
         /// <summary>
         /// returns UTC timestamp from current time
@@ -19,6 +20,42 @@ namespace PDFToImage
         public static string GetTimeStamp()
         {
             return DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
+        }
+
+        /// <summary>
+        /// returns directory that contains this application binary
+        /// </summary>
+        public static string GetBaseDirectory()
+        {
+            return AppDomain.CurrentDomain.BaseDirectory;
+        }
+
+        /// <summary>
+        /// same as 'System.IO.Path.Combine' but also creates all folders
+        /// </summary>
+        /// <param name="parts">Path Parts</param>
+        /// <returns>resulting directory</returns>
+        public static string MakeDirectories(params string[] parts)
+        {
+            string combinedPath = Path.Combine(parts);
+
+            if (!Directory.Exists(combinedPath))
+            {
+                Directory.CreateDirectory(combinedPath);
+            }
+
+            return combinedPath;
+        }
+
+        /// <summary>
+        /// returns path to the 'Output' directory
+        /// </summary>
+        public static string GetOutputDirectory()
+        {
+            var res = Helpers.MakeDirectories(GetBaseDirectory(), "Output");
+            if (res == null || !Directory.Exists(res))
+                throw new InvalidOperationException($"Somehow current base directory not found in your system!");
+            return res;
         }
 
         /// <summary>

@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:i="https://github.com/projektanker/icons.avalonia"
     xmlns:interfaces="using:PDFToImage.Interfaces"
+    xmlns:localisation="using:PDFToImage.Localization"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:PDFToImage.Models"
     xmlns:uv="clr-namespace:UVtools.AvaloniaControls;assembly=UVtools.AvaloniaControls"
@@ -13,7 +14,7 @@
     Width="850"
     Height="600"
     MinWidth="500"
-    MinHeight="600"
+    MinHeight="60"
     x:DataType="vm:MainWindowViewModel"
     Icon="/Assets/ic.ico"
     SystemDecorations="Full"
@@ -26,15 +27,18 @@
         -->
         <vm:MainWindowViewModel />
     </Design.DataContext>
-    <Grid Margin="10">
+    <Grid Margin="10,10,10,2">
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" MinHeight="300" />
+            <RowDefinition Height="*" MinHeight="75" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="105" MinHeight="105" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="2*" />
         </Grid.ColumnDefinitions>
+
+        <!--  Files List  -->
         <Border
             Grid.Row="0"
             Grid.Column="0"
@@ -52,13 +56,76 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </Border>
-        <StackPanel
+
+        <!--  Files List Commands  -->
+        <WrapPanel
+            Grid.Row="1"
+            Grid.Column="0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Classes="separation5"
+            Orientation="Horizontal">
+            <!--  Add Files  -->
+            <Button Name="addFilesBtn">
+                <StackPanel Orientation="Horizontal">
+                    <i:Icon
+                        Margin="2,0,5,0"
+                        FontSize="15"
+                        Value="mdi-plus-box-multiple" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Foreground="White"
+                        Text="{localisation:Loc ADD_FILES}" />
+                </StackPanel>
+            </Button>
+            <Button Name="clearFilesBtn" Command="{Binding ClearFilesCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <i:Icon
+                        Margin="2,0,5,0"
+                        FontSize="15"
+                        Value="mdi-backspace-outline" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Foreground="White"
+                        Text="{localisation:Loc CLEAR_FILES}" />
+                </StackPanel>
+            </Button>
+            <Button
+                Name="removeItemsBtn"
+                Classes="Primary"
+                Command="{Binding RemoveSelectedCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <i:Icon
+                        Margin="2,0,5,0"
+                        FontSize="15"
+                        Value="mdi-delete-outline" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Foreground="White"
+                        Text="{localisation:Loc REMOVE_SELECTED_FILES}" />
+                </StackPanel>
+            </Button>
+            <Button Name="openOutputFolder" Command="{Binding OpenOutputFolderCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <i:Icon
+                        Margin="2,0,5,0"
+                        FontSize="15"
+                        Value="mdi-folder" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Foreground="White"
+                        Text="{localisation:Loc OPEN_OUTPUT_FOLDER}" />
+                </StackPanel>
+            </Button>
+        </WrapPanel>
+
+        <!--  Conversion Settings  -->
+        <ScrollViewer
             Grid.Row="0"
             Grid.Column="1"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-            Classes="offset10_rl"
-            Orientation="Vertical">
+            Classes="offset10_rl">
             <uv:GroupBox
                 Padding="10,0,10,0"
                 Background="RoyalBlue"
@@ -68,14 +135,14 @@
                 Header="PDF Conversion Settings">
                 <StackPanel Orientation="Vertical">
                     <WrapPanel Classes="separation5">
+                        <!--  Threads Number  -->
                         <StackPanel VerticalAlignment="Top" Orientation="Vertical">
                             <Label
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Center"
+                                Content="{localisation:Loc THREADS_NUMBER}"
                                 FontSize="{DynamicResource FontSizeSmall}"
-                                Target="numThreads">
-                                Threads Number:
-                            </Label>
+                                Target="numThreads" />
                             <NumericUpDown
                                 Name="numThreads"
                                 VerticalAlignment="Center"
@@ -85,14 +152,14 @@
                                 Watermark="Select number of threads"
                                 Value="{Binding NumThreads}" />
                         </StackPanel>
+                        <!--  Quality  -->
                         <StackPanel VerticalAlignment="Top" Orientation="Vertical">
                             <Label
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Center"
+                                Content="{localisation:Loc QUALITY}"
                                 FontSize="{DynamicResource FontSizeSmall}"
-                                Target="qualityNumeric">
-                                Quality:
-                            </Label>
+                                Target="qualityNumeric" />
                             <NumericUpDown
                                 Name="qualityNumeric"
                                 VerticalAlignment="Center"
@@ -102,14 +169,14 @@
                                 Watermark="Select Image Quality"
                                 Value="{Binding Quality}" />
                         </StackPanel>
+                        <!--  Format  -->
                         <StackPanel VerticalAlignment="Top" Orientation="Vertical">
                             <Label
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Center"
+                                Content="{localisation:Loc FORMAT}"
                                 FontSize="{DynamicResource FontSizeSmall}"
-                                Target="conversionFormat">
-                                Format:
-                            </Label>
+                                Target="conversionFormat" />
                             <ComboBox
                                 Name="conversionFormat"
                                 VerticalAlignment="Center"
@@ -125,23 +192,25 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
                         </StackPanel>
+
+                        <!--  Lossless Compression Mode  -->
                         <CheckBox
                             Name="losslessCompressionMode"
                             VerticalAlignment="Center"
                             Classes="offset10_rl"
-                            Content="Lossless Compression"
+                            Content="{localisation:Loc LOSSLESS_COMPRESSION}"
                             IsChecked="{Binding IsLossless}"
                             IsEnabled="{Binding IsWebpSelected}"
                             IsVisible="{Binding IsWebpSelected}" />
 
+                        <!--  Max Sizes  -->
                         <StackPanel VerticalAlignment="Top" Orientation="Vertical">
                             <Label
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Center"
+                                Content="{localisation:Loc MAX_WIDTH}"
                                 FontSize="{DynamicResource FontSizeSmall}"
-                                Target="maxWidth">
-                                Max Width:
-                            </Label>
+                                Target="maxWidth" />
                             <NumericUpDown
                                 Name="maxWidth"
                                 VerticalAlignment="Center"
@@ -154,10 +223,9 @@
                             <Label
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Center"
+                                Content="{localisation:Loc MAX_HEIGHT}"
                                 FontSize="{DynamicResource FontSizeSmall}"
-                                Target="maxHeight">
-                                Max Height:
-                            </Label>
+                                Target="maxHeight" />
                             <NumericUpDown
                                 Name="maxHeight"
                                 VerticalAlignment="Center"
@@ -167,6 +235,8 @@
                                 Value="{Binding MaxHeight}" />
                         </StackPanel>
                     </WrapPanel>
+
+                    <!--  Passwords  -->
                     <Border
                         Padding="5,0"
                         BorderBrush="Orange"
@@ -181,11 +251,13 @@
                             AcceptsReturn="True"
                             FontSize="{DynamicResource FontSizeSmall}"
                             Text="{Binding PdfPasswords, Mode=TwoWay}"
-                            Watermark="PDF Passwords" />
+                            Watermark="{localisation:Loc PDF_PASSWORDS}" />
                     </Border>
                 </StackPanel>
             </uv:GroupBox>
-
+        </ScrollViewer>
+        <StackPanel Grid.Row="1" Grid.Column="1">
+            <!--  Convert Buttons  -->
             <Button Command="{Binding ConvertFilesCommand}">
                 <StackPanel Orientation="Horizontal">
                     <i:Icon
@@ -195,7 +267,7 @@
                     <TextBlock
                         HorizontalAlignment="Center"
                         Foreground="White"
-                        Text="Convert" />
+                        Text="{localisation:Loc START_CONVERSION}" />
                 </StackPanel>
             </Button>
             <Button
@@ -210,80 +282,24 @@
                     <TextBlock
                         HorizontalAlignment="Center"
                         Foreground="White"
-                        Text="Stop" />
+                        Text="{localisation:Loc STOP_CONVERSION}" />
                 </StackPanel>
             </Button>
         </StackPanel>
-        <WrapPanel
-            Grid.Row="1"
+        <Border
+            Grid.Row="2"
             Grid.Column="0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Classes="separation5"
-            Orientation="Horizontal">
-            <Button Name="addFilesBtn">
-                <StackPanel Orientation="Horizontal">
-                    <i:Icon
-                        Margin="2,0,5,0"
-                        FontSize="15"
-                        Value="mdi-plus-box-multiple" />
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        Foreground="White"
-                        Text="Add Files" />
-                </StackPanel>
-            </Button>
-            <Button Name="clearFilesBtn" Command="{Binding ClearFilesCommand}">
-                <StackPanel Orientation="Horizontal">
-                    <i:Icon
-                        Margin="2,0,5,0"
-                        FontSize="15"
-                        Value="mdi-backspace-outline" />
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        Foreground="White"
-                        Text="Clear" />
-                </StackPanel>
-            </Button>
-            <Button
-                Name="removeItemsBtn"
-                Classes="Primary"
-                Command="{Binding RemoveSelectedCommand}">
-                <StackPanel Orientation="Horizontal">
-                    <i:Icon
-                        Margin="2,0,5,0"
-                        FontSize="15"
-                        Value="mdi-delete-outline" />
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        Foreground="White"
-                        Text="Remove Selected" />
-                </StackPanel>
-            </Button>
-            <Button Name="openOutputFolder" Command="{Binding OpenOutputFolderCommand}">
-                <StackPanel Orientation="Horizontal">
-                    <i:Icon
-                        Margin="2,0,5,0"
-                        FontSize="15"
-                        Value="mdi-folder" />
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        Foreground="White"
-                        Text="Open Output" />
-                </StackPanel>
-            </Button>
-        </WrapPanel>
-        <TextBox
-            x:Name="logTB"
-            Grid.Row="1"
-            Grid.Column="1"
-            Height="125"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Bottom"
-            AcceptsReturn="True"
-            IsReadOnly="True"
-            Text="{Binding Log}"
-            TextWrapping="Wrap" />
+            Grid.ColumnSpan="2"
+            BorderBrush="RoyalBlue"
+            BorderThickness="1,1,1,1"
+            CornerRadius="0,0,5,5">
+            <TextBox
+                x:Name="logTB"
+                AcceptsReturn="True"
+                IsReadOnly="True"
+                Text="{Binding Log}"
+                TextWrapping="Wrap" />
+        </Border>
 
     </Grid>
 </Window>

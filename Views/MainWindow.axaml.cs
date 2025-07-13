@@ -2,6 +2,8 @@ using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using PDFToImage.Models;
 using PDFToImage.ViewModels;
+using PDFToImage.Localisation;
+using System.Diagnostics;
 
 namespace PDFToImage.Views
 {
@@ -9,10 +11,24 @@ namespace PDFToImage.Views
     {
         public MainWindow()
         {
-            InitializeComponent();
+            LoadLocalisation(); // should always be called before axaml is initialised!
+
+            InitializeComponent(); // here is axaml initialisation
+
+            // events
             addFilesBtn.Click += AddFilesBtn_Click;
             logTB.TextChanged += LogTB_TextChanged;
             losslessCompressionMode.IsCheckedChanged += LosslessCompressionMode_IsCheckedChanged;
+        }
+
+        private void LoadLocalisation()
+        {
+            using var sm = new SettingsManager(); // works as defer since disposable
+
+            //sm.SetSetting(Helpers.LOCALE_SETTING, "ru-RU"); // was used to write initial value
+
+            var culture = sm.GetSetting(Helpers.LOCALE_SETTING);
+            L.SetCulture(culture);
         }
 
         private void LosslessCompressionMode_IsCheckedChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
