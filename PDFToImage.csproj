@@ -1,51 +1,57 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <BuiltInComInteropSupport>false</BuiltInComInteropSupport>
-	<RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
-	<UseWPF>false</UseWPF>
-	<UseWindowsForms>false</UseWindowsForms>
-	<ImplicitUsings>true</ImplicitUsings>
-	<ApplicationIcon>Assets/ic.ico</ApplicationIcon>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<BuiltInComInteropSupport>false</BuiltInComInteropSupport>
+		<RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
+		<UseWPF>false</UseWPF>
+		<UseWindowsForms>false</UseWindowsForms>
+		<ImplicitUsings>true</ImplicitUsings>
+		<ApplicationIcon>Assets/ic.ico</ApplicationIcon>
 
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-	  <!-- this just makes easier to debug bindings in views - https://docs.avaloniaui.net/docs/basics/data/data-binding/compiled-bindings 
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<!-- this just makes easier to debug bindings in views - https://docs.avaloniaui.net/docs/basics/data/data-binding/compiled-bindings 
 		for better stability it might be disabled before releasing
 		-->
-	<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-  </PropertyGroup>
+		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <AvaloniaResource Include="Assets\**" />
-  </ItemGroup>
+	<ItemGroup>
+		<AvaloniaResource Include="Assets\**" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <!-- Include settings.ini and copy to output directory -->
-    <None Update="settings.ini">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<!-- Include settings.ini and copy to output directory -->
+		<None Update="settings.ini">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="LICENSE.txt">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="NOTICE.txt">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.3.2" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.3.2" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.2" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.2" />
+	<ItemGroup>
+		<PackageReference Include="Avalonia" Version="11.3.2" />
+		<PackageReference Include="Avalonia.Desktop" Version="11.3.2" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.2" />
+		<PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.2" />
 
-    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.2">
-      <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
-      <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
-    </PackageReference>
-    <!-- theme -->
-    <PackageReference Include="Citrus.Avalonia" Version="2.1.1" />
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
-    <PackageReference Include="PdfPig" Version="0.1.10" />
-    <PackageReference Include="PdfPig.Rendering.Skia" Version="0.1.10.2" />
-    <PackageReference Include="Projektanker.Icons.Avalonia" Version="9.6.2" />
-    <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="9.6.2" />
-    <PackageReference Include="UVtools.AvaloniaControls" Version="4.1.0" />
-  </ItemGroup>
+		<!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+		<PackageReference Include="Avalonia.Diagnostics" Version="11.3.2">
+			<IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+			<PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+		</PackageReference>
+		<!-- theme -->
+		<PackageReference Include="Citrus.Avalonia" Version="2.1.1" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+		<PackageReference Include="PdfPig" Version="0.1.10" />
+		<PackageReference Include="PdfPig.Rendering.Skia" Version="0.1.10.2" />
+		<PackageReference Include="Projektanker.Icons.Avalonia" Version="9.6.2" />
+		<PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="9.6.2" />
+		<PackageReference Include="UVtools.AvaloniaControls" Version="4.1.0" />
+	</ItemGroup>
 </Project>

@@ -89,7 +89,7 @@ namespace PDFToImage.Models
                 for (int i = 1; i <= document.NumberOfPages; i++) // NOTE: index starts from 1 because GetPageAsSKBitmap requires this
                 {
                     var bitmap = document.GetPageAsSKBitmap(i, Scale, RGBColor.White);
-                    if (bitmap.Width > MaxWidth || bitmap.Height > MaxHeight) // resize only if bigger
+                    if (bitmap.Width > MaxWidth && bitmap.Height > MaxHeight) // resize only if bigger
                     {
                         bitmap = BitmapResizer.ResizeBitmap(bitmap, MaxWidth, MaxHeight);
                     }
@@ -149,7 +149,7 @@ namespace PDFToImage.Models
                 for (int i = 1; i <= document.NumberOfPages; i++)
                 {
                     var bitmap = document.GetPageAsSKBitmap(i, Scale, RGBColor.White);
-                    if (bitmap.Width > MaxWidth || bitmap.Height > MaxHeight) // resize only if bigger
+                    if (bitmap.Width > MaxWidth && bitmap.Height > MaxHeight) // resize only if bigger
                     {
                         bitmap = BitmapResizer.ResizeBitmap(bitmap, MaxWidth, MaxHeight);
                     }
@@ -201,7 +201,7 @@ namespace PDFToImage.Models
                 for (int i = 1; i <= document.NumberOfPages; i++)
                 {
                     var bitmap = document.GetPageAsSKBitmap(i, Scale, RGBColor.White);
-                    if (bitmap.Width > MaxWidth || bitmap.Height > MaxHeight) // resize only if bigger
+                    if (bitmap.Width > MaxWidth && bitmap.Height > MaxHeight) // resize only if bigger
                     {
                         bitmap = BitmapResizer.ResizeBitmap(bitmap, MaxWidth, MaxHeight);
                     }

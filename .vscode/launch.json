@@ -11,11 +11,11 @@
             "preLaunchTask": "dotnet-meteor: Build"
         },
         {
-            "name": "Debug Image Converter",
+            "name": "Debug PDF Converter",
             "type": "dotnet",
             "request": "launch",
             "preLaunchTask": "dotnet: build",  // Optional
-            "projectPath": "${workspaceFolder}/ImageConverter.csproj"
+            "projectPath": "${workspaceFolder}/PDFToImage.csproj"
         },
     ]
 }

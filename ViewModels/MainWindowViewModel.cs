@@ -13,6 +13,7 @@ using PDFToImage.Models;
 using System.Collections.ObjectModel;
 using UglyToad.PdfPig;
 using PDFToImage.Localisation;
+using UglyToad.PdfPig.Rendering.Skia;
 
 namespace PDFToImage.ViewModels
 {
@@ -243,12 +244,15 @@ namespace PDFToImage.ViewModels
             // split by /n and trim results
             var passwords = PdfPasswords.Split('\n').Select(line => line.Trim()).ToList();
             // here we can set things like pdfPassword and so on
-            var pdfOpenOptions = new ParsingOptions
+            var pdfOpenOptions = SkiaRenderingParsingOptions.Instance;
+            pdfOpenOptions.Passwords = passwords;
+
+            /*new ParsingOptions
             {
                 UseLenientParsing = true,
                 ClipPaths = true,
                 Passwords = passwords
-            };
+            };*/
 
             AppendLog($"> Converting {Files.Count} files to {SelectedFormat.Name} {loselessStr}");
             int convertedCount = 0;
@@ -277,7 +281,7 @@ namespace PDFToImage.ViewModels
 
 
                     using var currentPdfStream = new MemoryStream(pdfBytes, writable: false);
-                    using var currentDocument = PdfDocument.Open(currentPdfStream, pdfOpenOptions);
+                    using var currentDocument = PdfDocument.Open(currentPdfStream, SkiaRenderingParsingOptions.Instance);// pdfOpenOptions);
 
                     // make new folder for every new pdf file
                     var relativeOutputPath = Path.Combine(outputDir, pureName);
