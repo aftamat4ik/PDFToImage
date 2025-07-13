@@ -275,7 +275,10 @@
                 </Grid>
             </uv:GroupBox>
         </ScrollViewer>
-        <StackPanel Grid.Row="1" Grid.Column="1">
+        <StackPanel
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="10,0">
             <!--  Convert Buttons  -->
             <Button Command="{Binding ConvertFilesCommand}">
                 <StackPanel Orientation="Horizontal">
