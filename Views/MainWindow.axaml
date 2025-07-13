@@ -20,7 +20,7 @@
     Width="850"
     Height="600"
     MinWidth="500"
-    MinHeight="60"
+    MinHeight="600"
     x:DataType="vm:MainWindowViewModel"
     Icon="/Assets/ic.ico"
     SystemDecorations="Full"
@@ -139,8 +139,18 @@
                 BorderThickness="0"
                 CornerRadius="5"
                 Header="PDF Conversion Settings">
-                <StackPanel Orientation="Vertical">
-                    <WrapPanel Classes="separation5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <WrapPanel
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Classes="separation5">
                         <!--  Threads Number  -->
                         <StackPanel VerticalAlignment="Top" Orientation="Vertical">
                             <Label
@@ -244,14 +254,17 @@
 
                     <!--  Passwords  -->
                     <Border
+                        Grid.Row="1"
+                        Grid.Column="0"
                         Padding="5,0"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
                         BorderBrush="Orange"
                         BorderThickness="1"
                         CornerRadius="3, 3, 3, 3">
                         <TextBox
                             Name="pdfPasswords"
                             MinHeight="70"
-                            MaxHeight="95"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
                             AcceptsReturn="True"
@@ -259,7 +272,7 @@
                             Text="{Binding PdfPasswords, Mode=TwoWay}"
                             Watermark="{localisation:Loc PDF_PASSWORDS}" />
                     </Border>
-                </StackPanel>
+                </Grid>
             </uv:GroupBox>
         </ScrollViewer>
         <StackPanel Grid.Row="1" Grid.Column="1">
