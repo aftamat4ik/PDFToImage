@@ -48,8 +48,11 @@
 		<!-- theme -->
 		<PackageReference Include="Citrus.Avalonia" Version="2.1.1" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
-		<PackageReference Include="PdfPig" Version="0.1.10" />
-		<PackageReference Include="PdfPig.Rendering.Skia" Version="0.1.10.2" />
+		<PackageReference Include="PdfPig" Version="0.1.11" />
+		<PackageReference Include="PdfPig.Filters.Dct.JpegLibrary" Version="0.1.11" />
+		<PackageReference Include="PdfPig.Filters.Jbig2.PdfboxJbig2" Version="0.1.11" />
+		<PackageReference Include="PdfPig.Filters.Jpx.OpenJpegDotNet" Version="0.1.10.2" />
+		<PackageReference Include="PdfPig.Rendering.Skia" Version="0.1.11.6" />
 		<PackageReference Include="Projektanker.Icons.Avalonia" Version="9.6.2" />
 		<PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="9.6.2" />
 		<PackageReference Include="UVtools.AvaloniaControls" Version="4.1.0" />

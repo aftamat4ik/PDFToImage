@@ -10,11 +10,114 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using PDFToImage.Interfaces;
 using SkiaSharp;
 using UglyToad.PdfPig;
+using UglyToad.PdfPig.Filters.Dct.JpegLibrary;
+using UglyToad.PdfPig.Filters;
 using UglyToad.PdfPig.Graphics.Colors;
 using UglyToad.PdfPig.Rendering.Skia;
+using UglyToad.PdfPig.Tokens;
+using UglyToad.PdfPig.Filters.Jbig2.PdfboxJbig2;
+using UglyToad.PdfPig.Filters.Jpx.OpenJpeg;
 
 namespace PDFToImage.Models
 {
+    // Create your filter provider
+    /*public sealed class MyFilterProvider : BaseFilterProvider
+    {
+        /// <summary>
+        /// The single instance of this provider.
+        /// </summary>
+        public static readonly IFilterProvider Instance = new MyFilterProvider();
+
+        /// <inheritdoc/>
+        private MyFilterProvider() : base(GetDictionary())
+        {
+        }
+
+        private static Dictionary<string, IFilter> GetDictionary()
+        {
+            var ascii85 = new Ascii85Filter();
+            var asciiHex = new AsciiHexDecodeFilter();
+            var ccitt = new CcittFaxDecodeFilter();
+            var dct = new JpegLibraryDctDecodeFilter(); // new filter
+            var flate = new FlateFilter();
+            var jbig2 = new PdfboxJbig2DecodeFilter();
+            var jpx = new OpenJpegJpxDecodeFilter();
+            var runLength = new RunLengthFilter();
+            var lzw = new LzwFilter();
+
+            return new Dictionary<string, IFilter>
+        {
+            { NameToken.Ascii85Decode.Data, ascii85 },
+            { NameToken.Ascii85DecodeAbbreviation.Data, ascii85 },
+            { NameToken.AsciiHexDecode.Data, asciiHex },
+            { NameToken.AsciiHexDecodeAbbreviation.Data, asciiHex },
+            { NameToken.CcittfaxDecode.Data, ccitt },
+            { NameToken.CcittfaxDecodeAbbreviation.Data, ccitt },
+            { NameToken.DctDecode.Data, dct }, // new filter
+            { NameToken.DctDecodeAbbreviation.Data, dct }, // new filter
+            { NameToken.FlateDecode.Data, flate },
+            { NameToken.FlateDecodeAbbreviation.Data, flate },
+            { NameToken.Jbig2Decode.Data, jbig2 },
+            { NameToken.JpxDecode.Data, jpx },
+            { NameToken.RunLengthDecode.Data, runLength },
+            { NameToken.RunLengthDecodeAbbreviation.Data, runLength },
+            { NameToken.LzwDecode.Data, lzw },
+            { NameToken.LzwDecodeAbbreviation.Data, lzw }
+        };
+        }
+    }*/
+
+    // Create your filter provider
+    public sealed class MyFilterProvider : BaseFilterProvider
+    {
+        /// <summary>
+        /// The single instance of this provider.
+        /// </summary>
+        public static readonly IFilterProvider Instance = new MyFilterProvider();
+
+        /// <inheritdoc/>
+        private MyFilterProvider() : base(GetDictionary())
+        {
+        }
+
+        private static Dictionary<string, IFilter> GetDictionary()
+        {
+            // new filters
+            var jbig2 = new PdfboxJbig2DecodeFilter();
+            var jpx = new OpenJpegJpxDecodeFilter();
+            var dct = new JpegLibraryDctDecodeFilter();
+
+            // Default filters
+            var ascii85 = new Ascii85Filter();
+            var asciiHex = new AsciiHexDecodeFilter();
+            var ccitt = new CcittFaxDecodeFilter();
+            //var dct = new DctDecodeFilter();
+            var flate = new FlateFilter();
+            var runLength = new RunLengthFilter();
+            var lzw = new LzwFilter();
+
+            return new Dictionary<string, IFilter>
+        {
+            { NameToken.Ascii85Decode.Data, ascii85 },
+            { NameToken.Ascii85DecodeAbbreviation.Data, ascii85 },
+            { NameToken.AsciiHexDecode.Data, asciiHex },
+            { NameToken.AsciiHexDecodeAbbreviation.Data, asciiHex },
+            { NameToken.CcittfaxDecode.Data, ccitt },
+            { NameToken.CcittfaxDecodeAbbreviation.Data, ccitt },
+            { NameToken.DctDecode.Data, dct }, // new filter
+            { NameToken.DctDecodeAbbreviation.Data, dct },
+            { NameToken.FlateDecode.Data, flate },
+            { NameToken.FlateDecodeAbbreviation.Data, flate },
+            { NameToken.Jbig2Decode.Data, jbig2 },
+            { NameToken.JpxDecode.Data, jpx },
+            { NameToken.RunLengthDecode.Data, runLength },
+            { NameToken.RunLengthDecodeAbbreviation.Data, runLength },
+            { NameToken.LzwDecode.Data, lzw },
+            { NameToken.LzwDecodeAbbreviation.Data, lzw }
+        };
+        }
+    }
+
     // this literally used for one task... TODO: maybe put it into helpers or so... or let it be
     public static class BitmapResizer{
         /// <summary>
